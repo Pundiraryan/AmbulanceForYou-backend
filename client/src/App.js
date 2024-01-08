@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import Axios from "axios";
 import socketIOClient from 'socket.io-client';
 import ReactMapGL, { Marker } from 'react-map-gl';
 import Geocoder from 'react-map-gl-geocoder';
@@ -24,9 +24,10 @@ function App(props) {
   const [ambulanceLocation, setAmbulanceLocation] = useState({});
   const mapRef = useRef();
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/ambulance/info/${props.match.params.ambulanceid}`)
-      .then((response) => {
-        // console.log(response);
+    const myfunc=async ()=>{
+      const response=await Axios.get(`http://localhost:5000/api/ambulance/info/${props.match.params.ambulanceid}`);
+      if(response){
+
         const setAmbulanceLocationvalue = {
           latitude: response.data.location.coordinates[1],
           longitude: response.data.location.coordinates[0]
@@ -38,8 +39,9 @@ function App(props) {
         socket.emit('join', {
           displayName: response.data.displayName
         });
-      });
-
+      }else{
+        console.log('no ambulance found');
+      }
     socket.on("request", (eventData) => {
       const setUserLocationvalue = {
         latitude: eventData.location.userLocation.latitude,
@@ -49,6 +51,9 @@ function App(props) {
       setResidence(eventData.location.addressPatient);
       setUserLocation(setUserLocationvalue);
     });
+
+    }
+    myfunc();
   }, [props.match.params.ambulanceid]);
 // console.log('here\n');
   const handleViewportChange = (newViewport) => {
