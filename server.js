@@ -47,17 +47,24 @@ var server = app.listen(PORT, () => {
     console.log(`Server started on  http://localhost:${PORT}`);
 });
 
+
+app.use('/api/ambulance',method);
+//For authenticating users
+app.use(signupRoutes);
+app.use(loginRoutes)
+
 //Initializing the server instance of websocket
 var io =require("socket.io")(server);
 
+
 //Connecting Users
 io.on('connection', (socket) => {
-    console.log("A user just connected");
+    // console.log("A user just connected");
 
     //Ambulance users joinning seperate rooms
     socket.on('join' ,(data) => {  
     socket.join(data.displayName);
-    console.log(`User joined room ${data.displayName}`)
+    // console.log(`User joined room ${data.displayName}`)
 })
     
 
@@ -66,9 +73,7 @@ io.on('connection', (socket) => {
 
 socket.on("request-for-help",(data) => {
     // console.log(`this is data - ${data.patientName}`)
-    // console.log("HRE IN SERVER.JS")
     const requestTime = new Date();
-    console.log(data);
     const requestId = mongoose.Types.ObjectId();
     const location = {
         addressPatient : data.addressPatient,
@@ -77,9 +82,9 @@ socket.on("request-for-help",(data) => {
             data.location.userLocation.latitude
         ]
     }
-    // console.log("---");
+
+
     const patientId = data.patientId;
-    // console.log(patientId)
     const status = "waiting";
 
     const request = new requestModel({
@@ -92,25 +97,25 @@ socket.on("request-for-help",(data) => {
 
     //Saving request to the database
     request.save().then((request) => {
-        console.log("ok");
+        console.log('help request saved in database');
     }).catch((err) => {
-        console.log("error in saving")
+        // console.log("error in saving")
         console.log(err);
     })
 
     //Fetching nearest ambulance
     
-    console.log(location.coordinates[0]);
-    console.log(location.coordinates[1]);
+    // console.log(location.coordinates[0]);
+    // console.log(location.coordinates[1]);
     const nearestAmbulance =  otherMethod(location.coordinates[0],location.coordinates[1]);
     // console.log(nearestAmbulance,"nearest");
     nearestAmbulance.then((result) => {
         for(let i=0;i<result.length;i++)
         {
             //Emitting the event to the nearby ambulances
-            //@App component
-            console.log(result,"hello");
+            //@App component;
             io.to(result[i].displayName).emit("request",data);
+            console.log('request sent to '+result[i].displayName);
             
         }
     }
@@ -118,11 +123,14 @@ socket.on("request-for-help",(data) => {
         console.log(err);
     })
     });
+
+
+
     //Listening for the event from ambulance 
     //@App Component
     socket.on("request-accepted", (data) => {
         ambulanceDetails = data;
-        // console.log(data)
+        // console.log('sentttttttttttttttttt')
         //Emitting the event to the patient
         //@User Component
         io.emit("request-sent",ambulanceDetails);
@@ -134,10 +142,6 @@ app.use(express.urlencoded({
 }));
 // console.log("herllo")
 //Initializing Routes
-app.use('/api/ambulance',method);
-//For authenticating users
-app.use(signupRoutes);
-app.use(loginRoutes)
 
 
 
