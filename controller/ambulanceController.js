@@ -54,8 +54,8 @@ const nearestAmbulance = async (longitude,latitude) => {
                 }
             }
         }).exec();
-        console.log(newamb.length);
-        return newamb;
+        // console.log(newamb.length);
+        // return newamb;
     } catch (error) {
         console.log(error);
     }
