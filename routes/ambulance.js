@@ -3,29 +3,7 @@ const router = express.Router();
 const ambulanceModel = require("../model/ambulance");
 const isAuth = require('../user/authentication/isAuth')
 
-router.post('/',(req,res) => {
-    const {ambulanceid,displayName,phone,email,location} = req.body;
-    const ambulance = new ambulanceModel({
-        ambulanceid,
-        displayName,
-        phone,
-        email,
-        location
-    })
-    console.log(req.body.location)
-
-    //Saving Ambulance Data
-    ambulance.save((err,result) => {
-         if(err) {
-            console.log("error has occured");
-            res.status(404).json(err);
-        }
-        else {
-            console.log("saved sucessfully")
-            res.status(200).json(result);
-        }
-    })
-})
+router.post('/',)
 
 //Fetching nearby Ambulancedata depending upon maxDistance specified from user
 const nearestAmbulance = async (longitude,latitude) => {
