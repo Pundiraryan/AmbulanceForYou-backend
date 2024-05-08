@@ -67,7 +67,9 @@ app.use('/api/request',requestroutes);
 //For authenticating users
 app.use(signupRoutes);
 app.use(loginRoutes)
-
+app.get("/",(req,res)=>{
+    res.send("this is main page ");
+})
 //Initializing the server instance of websocket
 var io =require("socket.io")(server);
 
