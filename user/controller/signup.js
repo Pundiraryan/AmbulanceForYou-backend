@@ -42,7 +42,6 @@ async function Signup(req, res, next) {
             message: 'user has been successfully created',
             id: new_user._id
         })
-
     } catch (error) {
         next(error)
     }

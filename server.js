@@ -6,10 +6,14 @@ const mongoose = require('mongoose');
 const requestModel = require("././model/request");
 const myMethods = require("./routes/ambulance");
 const method = myMethods.method;
+const requestroutes=require('./routes/request');
 const otherMethod = myMethods.otherMethod;
 const dotenv = require("dotenv");
 const signupRoutes = require('./user/routes/singup_route');
 const loginRoutes = require('./user/routes/login_route')
+const redis = require("redis");
+// const keys = require("../config/keys");
+const {createClient}=require('redis');
 
 dotenv.config({
     path : ".env"
@@ -43,12 +47,23 @@ app.use(cors());
 
 const PORT = process.env.PORT || 5000;
 
+// const redisconnect=async()=>{
+
+//     const client = createClient();
+
+// client.on('error', err => console.log('Redis Client Error', err));
+
+// await client.connect();
+// }
+// redisconnect();
+
 var server = app.listen(PORT, () => {
     console.log(`Server started on  http://localhost:${PORT}`);
 });
 
 
 app.use('/api/ambulance',method);
+app.use('/api/request',requestroutes);
 //For authenticating users
 app.use(signupRoutes);
 app.use(loginRoutes)
@@ -128,13 +143,14 @@ socket.on("request-for-help",(data) => {
 
     //Listening for the event from ambulance 
     //@App Component
-    socket.on("request-accepted", (data) => {
+    socket.on("request-accepted-client", (data) => {
         ambulanceDetails = data;
         // console.log('sentttttttttttttttttt')
         //Emitting the event to the patient
         //@User Component
         io.emit("request-sent",ambulanceDetails);
     })
+
 })
 //for url encoding
 app.use(express.urlencoded({

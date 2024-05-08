@@ -6,9 +6,11 @@ const jwt = require('jsonwebtoken')
 
 async function login(req, res, next) {
     const { email, password } = req.body;
+    console.log(email);
+    console.log(password);
     let err;
-
     const user_exist = await User.findOne({ email: email });
+    // console.log(user_exist);
     try {
         if (!user_exist) {
             err = new ValidationError('this is not a registered user', 404);
@@ -22,8 +24,8 @@ async function login(req, res, next) {
         }
 
 
-        const login_token =  jwt.sign({ id: user_exist._id, email: user_exist.email }, process.env.SECRET_KEY , {expiresIn : '2h'});
-        clg(login_token);
+        const login_token =  jwt.sign({ id: user_exist._id, email: user_exist.email }, process.env.SECRET_KEY , {expiresIn : '24h'});
+        // console.log(login_token);
         res.status(201).json({
             token: login_token,
             user: {

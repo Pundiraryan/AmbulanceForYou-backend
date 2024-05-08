@@ -21,6 +21,17 @@ const createAmbulance=async (req,res) => {
     }
 }
 
+const getallambulances=async(req,res)=>{
+    try {
+        const result=await ambulanceModel.find();
+        if(result){
+            res.status(200).send(result);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 const findAmbulance = async (req,res) => {
     const {ambulanceid} = req.params;
     const curr=String(ambulanceid);
@@ -29,6 +40,7 @@ const findAmbulance = async (req,res) => {
         const result=await ambulanceModel.findOne({
             ambulanceid:query
         });
+        console.log(result);
         if(result){
             return res.json(result);
         }else{
@@ -61,4 +73,4 @@ const nearestAmbulance = async (longitude,latitude) => {
     }
 }
 
-module.exports={findAmbulance,createAmbulance,nearestAmbulance}
+module.exports={findAmbulance,createAmbulance,nearestAmbulance,getallambulances}
